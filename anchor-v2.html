@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Anchor — A Safe Place to Land</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!--
+  BRANDING: Replace 'Lora' with 'HV Analogue' in production.
+  Purchase: creativemarket.com/harmonais.visual/10180602-Analogue-Humanist-Retro-Serif
+-->
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0f1519;
+  --bg-warm:#131a1f;
+  --bg-card:#1a2329;
+  --bg-card-hover:#1f2a32;
+  --bg-card-selected:#1c2e36;
+  --anchor:#5b9ead;
+  --anchor-light:#7ec4d4;
+  --anchor-pale:#a8dce6;
+  --anchor-dim:#3d6e7a;
+  --anchor-glow:rgba(91,158,173,0.12);
+  --anchor-glow-strong:rgba(91,158,173,0.25);
+  --sea-deep:#2a4a54;
+  --sea-green:#4a8a7a;
+  --sea-green-glow:rgba(74,138,122,0.15);
+  --sand:#d4c4a0;
+  --sand-light:#e8dcc4;
+  --cream:#e8e0d0;
+  --cream-soft:#b8ad9a;
+  --cream-dim:#7a7468;
+  --warm-amber:rgba(200,160,90,0.08);
+  --font-serif:'Lora',Georgia,serif;
+  --font-sans:'DM Sans',-apple-system,sans-serif;
+}
+html,body{background:var(--bg);min-height:100vh;overflow-x:hidden;}
+body{font-family:var(--font-sans);color:var(--cream);-webkit-font-smoothing:antialiased;}
+input::placeholder,textarea::placeholder{color:rgba(122,116,104,0.6);}
+textarea{resize:vertical;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(91,158,173,0.2);border-radius:2px;}
+button{font-family:var(--font-sans);cursor:pointer;}
+
+.atmo-glow{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse at 30% -10%,rgba(91,158,173,0.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 70% 110%,rgba(74,138,122,0.06) 0%,transparent 50%);
+}
+.atmo-grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
+@keyframes gentlePulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
+.fade-up{animation:fadeUp 0.7s ease both;}
+.fd1{animation:fadeUp 0.7s ease 0.12s both;}
+.fd2{animation:fadeUp 0.7s ease 0.24s both;}
+.fd3{animation:fadeUp 0.7s ease 0.36s both;}
+.fd4{animation:fadeUp 0.7s ease 0.48s both;}
+.fd5{animation:fadeUp 0.7s ease 0.6s both;}
+.scale-in{animation:scaleIn 1.2s cubic-bezier(0.23,1,0.32,1) 0.2s both;}
+
+.screen{min-height:100vh;position:relative;z-index:1;max-width:480px;margin:0 auto;display:none;}
+.screen.active{display:block;}
+.screen.flex-screen.active{display:flex;}
+.serif{font-family:var(--font-serif);}
+.label{color:var(--cream-dim);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;}
+.heading{font-family:var(--font-serif);font-size:26px;color:var(--cream);font-weight:400;margin-bottom:8px;line-height:1.35;}
+.sub{color:var(--cream-dim);font-size:14px;margin-bottom:24px;line-height:1.5;}
+.back-btn{background:none;border:none;color:var(--cream-dim);font-size:14px;cursor:pointer;padding:0;margin-bottom:24px;}
+.back-btn:hover{color:var(--anchor-light);}
+.input-field{
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.15);
+  border-radius:12px;padding:14px 18px;color:var(--cream);
+  font-family:var(--font-sans);font-size:15px;width:100%;outline:none;
+  transition:border-color 0.3s;
+}
+.input-field:focus{border-color:var(--anchor);}
+.textarea-field{
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.15);
+  border-radius:12px;padding:14px 18px;color:var(--cream);
+  font-family:var(--font-sans);font-size:15px;width:100%;outline:none;
+  transition:border-color 0.3s;min-height:100px;line-height:1.6;
+}
+.textarea-field:focus{border-color:var(--anchor);}
+
+.progress{display:flex;gap:4px;margin-bottom:40px;}
+.progress-dot{flex:1;height:2px;border-radius:1px;background:rgba(91,158,173,0.12);transition:background 0.5s;}
+.progress-dot.active{background:var(--anchor);}
+
+.trigger-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.trigger-btn{
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.1);
+  border-radius:14px;padding:14px 12px;cursor:pointer;text-align:left;
+  transition:all 0.3s;
+}
+.trigger-btn:hover{border-color:var(--anchor-dim);background:var(--bg-card-hover);}
+.trigger-btn.selected{background:var(--anchor-glow-strong);border-color:var(--anchor);}
+.trigger-btn .icon{font-size:20px;margin-bottom:5px;}
+.trigger-btn .name{color:var(--cream);font-size:13px;font-weight:500;}
+.trigger-btn .desc{color:var(--cream-dim);font-size:11px;margin-top:2px;}
+
+.btn-primary{
+  width:100%;padding:16px;border-radius:14px;border:none;
+  background:var(--anchor);color:var(--bg);font-size:15px;font-weight:600;
+  cursor:pointer;transition:all 0.3s;margin-top:32px;
+}
+.btn-primary:hover{background:var(--anchor-light);}
+.btn-primary:disabled{background:rgba(91,158,173,0.15);color:var(--cream-dim);cursor:default;}
+.btn-primary:disabled:hover{background:rgba(91,158,173,0.15);}
+
+.home-card{
+  width:100%;background:var(--bg-card);border:1px solid rgba(91,158,173,0.08);
+  border-radius:18px;padding:22px;cursor:pointer;text-align:left;
+  transition:all 0.3s;margin-bottom:10px;
+}
+.home-card:hover{border-color:var(--anchor-dim);box-shadow:0 0 30px var(--anchor-glow);}
+.card-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.card-title{color:var(--cream);font-size:15px;font-weight:500;margin-bottom:2px;}
+.card-sub{color:var(--cream-dim);font-size:12px;}
+
+.mood-btn{
+  background:transparent;border:1px solid rgba(91,158,173,0.15);
+  border-radius:14px;padding:10px 5px;cursor:pointer;width:58px;
+  transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.mood-btn:hover{background:var(--anchor-glow);border-color:var(--anchor-dim);}
+.mood-btn .emoji{font-size:26px;}
+.mood-btn .mood-label{color:var(--cream-dim);font-size:10px;}
+
+.chat-area{flex:1;overflow-y:auto;padding:20px 20px 120px;}
+.anchor-msg{
+  background:var(--bg-card);border-radius:4px 14px 14px 14px;padding:13px 16px;
+  color:var(--cream-soft);font-size:14px;line-height:1.6;
+  border:1px solid rgba(91,158,173,0.06);
+}
+.user-msg{
+  background:var(--anchor-glow-strong);border-radius:14px 4px 14px 14px;padding:13px 16px;
+  color:var(--cream);font-size:14px;line-height:1.6;max-width:80%;margin-left:auto;
+}
+.chat-input-bar{
+  padding:14px 20px;border-top:1px solid rgba(91,158,173,0.06);
+  background:var(--bg-warm);position:sticky;bottom:0;display:flex;gap:10px;
+}
+.chat-input{
+  flex:1;background:var(--bg-card);border:1px solid rgba(91,158,173,0.15);
+  border-radius:12px;padding:12px 14px;color:var(--cream);
+  font-family:var(--font-sans);font-size:14px;outline:none;
+}
+.chat-input:focus{border-color:var(--anchor);}
+.chat-send{
+  background:var(--anchor);border:none;border-radius:12px;
+  width:42px;height:42px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;font-size:16px;
+  color:var(--bg);flex-shrink:0;transition:background 0.2s;
+}
+.chat-send:hover{background:var(--anchor-light);}
+
+.mantra-card{
+  background:linear-gradient(135deg,var(--anchor-glow),var(--sea-green-glow));
+  border-radius:20px;padding:28px 22px;
+  border:1px solid rgba(91,158,173,0.12);text-align:center;
+}
+.mantra-line{
+  font-family:var(--font-serif);font-size:17px;color:var(--cream);
+  font-weight:400;line-height:1.7;font-style:italic;max-width:360px;
+  margin:0 auto 14px;padding:12px 0;border-bottom:1px solid rgba(91,158,173,0.08);
+}
+.mantra-line:last-of-type{border-bottom:none;margin-bottom:0;}
+.mantra-number{
+  display:inline-block;width:22px;height:22px;border-radius:50%;
+  background:var(--anchor-glow);color:var(--anchor-light);font-size:11px;
+  font-family:var(--font-sans);font-style:normal;line-height:22px;
+  text-align:center;margin-right:8px;vertical-align:middle;
+}
+
+.breath-circle{
+  border-radius:50%;
+  background:radial-gradient(circle,var(--anchor-glow-strong),transparent);
+  border:1px solid rgba(91,158,173,0.18);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 36px;cursor:pointer;transition:all 4s ease-in-out;
+}
+
+.trigger-list{display:flex;flex-direction:column;gap:8px;}
+.trigger-list-btn{
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.08);
+  border-radius:14px;padding:16px 18px;cursor:pointer;text-align:left;
+  transition:all 0.3s;display:flex;align-items:center;gap:12px;
+}
+.trigger-list-btn:hover{border-color:var(--anchor);background:var(--bg-card-hover);}
+.trigger-list-btn .icon{font-size:24px;}
+.trigger-list-btn .name{color:var(--cream);font-size:14px;font-weight:500;}
+.trigger-list-btn .desc{color:var(--cream-dim);font-size:12px;}
+
+.btn-secondary{
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.15);
+  color:var(--cream-soft);font-size:13px;padding:11px 22px;
+  border-radius:12px;cursor:pointer;transition:all 0.2s;
+}
+.btn-secondary:hover{border-color:var(--anchor);color:var(--cream);}
+.btn-amber{
+  background:var(--anchor);border:none;color:var(--bg);
+  font-size:13px;font-weight:600;padding:11px 22px;
+  border-radius:12px;cursor:pointer;transition:background 0.2s;
+}
+.btn-amber:hover{background:var(--anchor-light);}
+
+/* Photo upload */
+.photo-upload{
+  width:90px;height:90px;border-radius:50%;border:2px dashed rgba(91,158,173,0.25);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  overflow:hidden;transition:all 0.3s;margin:0 auto 16px;
+  background:var(--bg-card);
+}
+.photo-upload:hover{border-color:var(--anchor);}
+.photo-upload img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.photo-upload .placeholder{color:var(--cream-dim);font-size:11px;text-align:center;line-height:1.3;}
+
+/* Loved one avatar in chat */
+.loved-avatar{
+  width:32px;height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.15);
+  display:flex;align-items:center;justify-content:center;
+}
+.loved-avatar img{width:100%;height:100%;object-fit:cover;}
+
+.hidden{display:none!important;}
+
+/* Tag chips for descriptors */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.tag-chip{
+  background:var(--bg-card);border:1px solid rgba(91,158,173,0.15);
+  border-radius:20px;padding:7px 14px;font-size:13px;color:var(--cream-soft);
+  cursor:pointer;transition:all 0.2s;
+}
+.tag-chip:hover{border-color:var(--anchor-dim);color:var(--cream);}
+.tag-chip.selected{background:var(--anchor-glow-strong);border-color:var(--anchor);color:var(--cream);}
+</style>
+</head>
+<body>
+
+<div class="atmo-glow"></div>
+<div class="atmo-grain"></div>
+
+<!-- ═══ SPLASH ═══ -->
+<div id="screen-splash" class="screen flex-screen active" style="min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">
+  <div class="scale-in">
+    <div style="font-size:52px;margin-bottom:8px;">⚓</div>
+    <h1 class="serif" style="font-size:44px;font-weight:400;color:var(--anchor-light);letter-spacing:0.08em;margin-bottom:8px;">Anchor</h1>
+    <p style="font-size:14px;color:var(--cream-dim);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:48px;">A safe place to land</p>
+    <button onclick="showScreen('intake')" style="background:transparent;border:1px solid var(--anchor-dim);color:var(--cream);font-size:14px;padding:13px 44px;border-radius:40px;cursor:pointer;letter-spacing:0.06em;transition:all 0.3s;font-family:var(--font-sans);"
+      onmouseenter="this.style.background='var(--anchor-glow-strong)';this.style.borderColor='var(--anchor)'"
+      onmouseleave="this.style.background='transparent';this.style.borderColor='var(--anchor-dim)'"
+    >Begin</button>
+  </div>
+</div>
+
+<!-- ═══ INTAKE ═══ -->
+<div id="screen-intake" class="screen" style="padding:48px 24px 40px;">
+  <div class="progress" id="intake-progress"></div>
+  <div id="intake-container"></div>
+  <button id="intake-btn" class="btn-primary" onclick="advanceIntake()" disabled>Continue</button>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div id="screen-home" class="screen" style="padding:44px 24px 40px;">
+  <div class="fade-up">
+    <p class="label" id="home-date"></p>
+    <h1 class="heading" style="font-size:28px;margin-bottom:36px;" id="home-greeting"></h1>
+  </div>
+  <div class="fd1" id="checkin-card" style="background:var(--bg-card);border-radius:18px;padding:24px 20px;border:1px solid rgba(91,158,173,0.08);margin-bottom:16px;">
+    <div id="checkin-ask" style="text-align:center;">
+      <p style="color:var(--cream-soft);font-size:15px;margin-bottom:18px;">How are you feeling right now?</p>
+      <div style="display:flex;justify-content:center;gap:10px;" id="mood-row"></div>
+    </div>
+    <div id="checkin-done" class="hidden" style="text-align:center;"></div>
+  </div>
+  <div class="fd2">
+    <div class="home-card" onclick="showScreen('anxious-pick')" style="background:linear-gradient(135deg,var(--bg-card),var(--bg-card-hover));">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon" style="background:var(--anchor-glow);">🌊</div>
+        <div><div class="card-title">I'm feeling anxious</div><div class="card-sub">Work through it with me</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="fd3">
+    <div class="home-card" onclick="showScreen('mantra-pick')">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon" style="background:var(--sea-green-glow);">🕯️</div>
+        <div><div class="card-title">Read me a mantra</div><div class="card-sub">Five things to hold onto</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="fd4">
+    <div class="home-card" onclick="startTalkChat()">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon" id="home-talk-icon" style="background:rgba(91,158,173,0.08);">💬</div>
+        <div><div class="card-title" id="home-talk-title">Let's talk</div><div class="card-sub" id="home-talk-sub">Just need someone to listen</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="fd5" style="text-align:center;margin-top:36px;">
+    <p style="color:var(--cream-dim);font-size:11px;letter-spacing:0.1em;">⚓ You're here. That's what matters.</p>
+  </div>
+</div>
+
+<!-- ═══ ANXIOUS: PICK TRIGGER ═══ -->
+<div id="screen-anxious-pick" class="screen" style="padding:44px 24px;">
+  <button class="back-btn" onclick="showScreen('home')">← Back</button>
+  <div class="fade-up">
+    <h2 class="heading">What's coming up for you?</h2>
+    <p class="sub">Pick what feels closest.</p>
+    <div class="trigger-list" id="anxious-trigger-list"></div>
+  </div>
+</div>
+
+<!-- ═══ ANXIOUS: BREATHE + MANTRA FLOW ═══ -->
+<div id="screen-anxious-flow" class="screen flex-screen" style="min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;position:relative;">
+  <button class="back-btn" onclick="exitAnxiousFlow()" style="position:absolute;top:20px;left:24px;">← Back</button>
+
+  <!-- Phase 1: Breathing -->
+  <div id="af-breathing">
+    <div class="fade-up">
+      <p class="label" id="af-trigger-label"></p>
+      <p style="color:var(--cream-soft);font-family:var(--font-serif);font-size:20px;margin-bottom:32px;line-height:1.5;">I hear you. Let's slow down<br>before we do anything else.</p>
+    </div>
+    <div class="fd2">
+      <div id="af-breath-circle" style="width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,var(--anchor-glow-strong),transparent);border:1px solid rgba(91,158,173,0.18);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;transition:all 4s ease-in-out;">
+        <span id="af-breath-text" style="color:var(--anchor-light);font-size:13px;font-weight:500;">Breathe in</span>
+      </div>
+      <p id="af-breath-count" style="color:var(--cream-dim);font-size:12px;letter-spacing:0.08em;">Breath 1 of 3</p>
+    </div>
+  </div>
+
+  <!-- Phase 2: Mantra (hidden initially) -->
+  <div id="af-mantra" class="hidden" style="max-width:400px;">
+    <div style="font-size:24px;margin-bottom:10px;">🕯️</div>
+    <p class="label" id="af-mantra-from" style="margin-bottom:16px;"></p>
+    <div id="af-mantra-lines"></div>
+    <div id="af-mantra-safe" class="hidden" style="margin-top:18px;">
+      <p style="color:var(--anchor-light);font-size:14px;" id="af-mantra-safe-text"></p>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:28px;">
+      <button class="btn-secondary" onclick="anxiousNextMantra()">Another set</button>
+      <button class="btn-amber" onclick="startTalkFromAnxious()">Let's talk</button>
+      <button class="btn-secondary" onclick="showScreen('home')">I'm okay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MANTRA: PICK TRIGGER ═══ -->
+<div id="screen-mantra-pick" class="screen" style="padding:44px 24px;">
+  <button class="back-btn" onclick="showScreen('home')">← Back</button>
+  <div class="fade-up">
+    <h2 class="heading">What do you need right now?</h2>
+    <p class="sub">Pick a theme for your mantra.</p>
+    <div class="trigger-list" id="mantra-trigger-list"></div>
+  </div>
+</div>
+
+<!-- ═══ MANTRA: DISPLAY ═══ -->
+<div id="screen-mantra-display" class="screen flex-screen" style="min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">
+  <button class="back-btn" onclick="showScreen('mantra-pick')" style="position:absolute;top:20px;left:24px;">← Back</button>
+  <div class="fade-up">
+    <div class="breath-circle" id="breath-circle" style="width:76px;height:76px;" onclick="startBreathing()">
+      <span id="breath-label" style="color:var(--cream-dim);font-size:11px;">Tap to<br>breathe</span>
+    </div>
+  </div>
+  <div class="fd1"><p class="label" id="mantra-from"></p></div>
+  <div class="fd2" id="mantra-lines-container" style="margin-bottom:24px;"></div>
+  <div id="mantra-safe-word" class="fd3 hidden" style="margin-bottom:28px;">
+    <p style="color:var(--anchor-light);font-size:14px;" id="mantra-safe-text"></p>
+  </div>
+  <div class="fd4" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <button class="btn-secondary" onclick="nextMantraSet()">Another set</button>
+    <button class="btn-amber" onclick="startTalkFromMantra()">Let's talk</button>
+    <button class="btn-secondary" onclick="showScreen('home')">I'm okay</button>
+  </div>
+</div>
+
+<!-- ═══ TALK CHAT (voice of loved one) ═══ -->
+<div id="screen-talk" class="screen flex-screen" style="min-height:100vh;flex-direction:column;">
+  <div style="padding:16px 20px 14px;border-bottom:1px solid rgba(91,158,173,0.06);display:flex;align-items:center;gap:10px;">
+    <button class="back-btn" style="margin-bottom:0;" onclick="showScreen('home')">← Back</button>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <div class="loved-avatar" id="talk-avatar"><span style="font-size:14px;">💛</span></div>
+      <span style="color:var(--cream-soft);font-size:13px;" id="talk-header-name">Your person</span>
+    </div>
+  </div>
+  <div class="chat-area" id="talk-messages"></div>
+  <div class="chat-input-bar">
+    <input class="chat-input" id="talk-input" placeholder="Tell me what's on your mind..." onkeydown="if(event.key==='Enter')submitTalkMsg()">
+    <button class="chat-send" onclick="submitTalkMsg()">↑</button>
+  </div>
+</div>
+
+<input type="file" id="photo-file-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+
+<script>
+// ═══ DATA ═══
+const TRIGGERS=[
+  {id:"hangxiety",label:"Hangxiety",icon:"🍷",desc:"Anxiety after drinking"},
+  {id:"attachment",label:"Anxious attachment",icon:"💛",desc:"Fear of abandonment or rejection"},
+  {id:"financial",label:"Financial stress",icon:"💰",desc:"Money worries"},
+  {id:"health",label:"Health anxiety",icon:"🩺",desc:"Worry about physical symptoms"},
+  {id:"social",label:"Social anxiety",icon:"👥",desc:"Fear of judgement in social settings"},
+  {id:"work",label:"Work pressure",icon:"💼",desc:"Deadlines, performance, burnout"},
+  {id:"existential",label:"Existential dread",icon:"🌌",desc:"Big questions, feeling small"},
+  {id:"sleep",label:"Sleep anxiety",icon:"🌙",desc:"Racing thoughts at bedtime"},
+];
+
+// Dynamic mantra generator — builds "I" statements from the user's profile
+// Each trigger has template sets. Placeholders: {name}, {career}, {quality}, {love}, {lovedOne}, {family}, {friends}, {location}
+// The system picks from the user's descriptors/selfLove to fill {quality} and {love}
+
+const MANTRA_TEMPLATES={
+  hangxiety:[
+    [
+      "I am not defined by last night. I am {quality}, and one evening does not undo that.",
+      "This feeling is chemical — it is my body processing, not the truth about who I am.",
+      "I have survived every morning-after. I am still {quality}, still {love}.",
+      "The people who love me are not keeping score. {lovedOne_or_they} see me, not my worst moment.",
+      "I am allowed to forgive myself today. I am enough, even on days like this."
+    ],
+    [
+      "I am more than my anxiety is telling me right now. I am {quality}.",
+      "Shame is not a fact. It is a feeling, and feelings pass. I know this about myself.",
+      "I choose to treat myself the way I would treat someone I love — with kindness.",
+      "My worth was never on the table last night. I am {love}, and that hasn't changed.",
+      "Right now I am breathing. Right now I am safe. That is enough."
+    ],
+    [
+      "I refuse to let one night rewrite my whole story. I am {quality} and I know that.",
+      "My brain is exaggerating because it's tired. I don't have to believe everything it says.",
+      "I have {family_or_people} who love me on my best days and my worst. This is a worst day. They're still here.",
+      "I am a good person who had a rough night. Those two things can both be true.",
+      "I am {love}. Alcohol cannot take that from me."
+    ],
+  ],
+  attachment:[
+    [
+      "I am whole on my own. I have always been. I am {quality}.",
+      "Silence from someone I love does not erase my worth. I am still {love}.",
+      "I do not need constant reassurance to know I am enough.",
+      "The love I have for {lovedOne_or_them} does not require me to shrink. I am {quality}.",
+      "I am safe in this moment. The story my mind is writing is not the one that's happening."
+    ],
+    [
+      "I am worthy of love that doesn't require me to earn it every day.",
+      "My fear of being left is older than this relationship. It is not the truth about right now.",
+      "I am {quality} and {love}. People don't stay because I perform — they stay because of who I am.",
+      "I choose to trust the pattern: the people in my life have shown me, again and again, that they are here.",
+      "I am anchored in myself. Other people's silence is not my rejection."
+    ],
+    [
+      "I do not need to chase love. I am {quality}, and the right people see that without being convinced.",
+      "I am more than my need to be needed. I am {love}.",
+      "When I feel the pull to cling, I remind myself: I have survived every quiet moment before this one.",
+      "My {career_context} and my relationships are separate — I can be successful at both without being perfect at either.",
+      "I am allowed to need people and still be independent. Both things live in me."
+    ],
+  ],
+  financial:[
+    [
+      "I am more than my bank balance. I am {quality}, and that has never cost a thing.",
+      "I have navigated hard seasons before. {career_context_financial} — and I'm still here.",
+      "One step at a time. I don't need to solve everything today. Just today's piece.",
+      "I am {love}. No amount of money changes that, and no shortage takes it away.",
+      "This season is temporary. I am resourceful, I am {quality}, and I will find my way through."
+    ],
+    [
+      "Money is a circumstance. It is not my character. I am {quality}.",
+      "I am allowed to rest even when things are tight. My nervous system is not a luxury.",
+      "The people who love me — {lovedOne_or_family} — don't see a number when they look at me.",
+      "I am {love}. That is my real wealth, and it is not going anywhere.",
+      "I breathe. The solution doesn't need panic to work. I can figure this out with a calm mind."
+    ],
+    [
+      "Scarcity is a feeling, not always a fact. I am {quality} enough to tell the difference.",
+      "{career_context_financial} — this doesn't define my future.",
+      "I am not behind. I am exactly where I am, and that's a valid place to be.",
+      "I have {family_or_people} around me. I am not navigating this alone.",
+      "I am {love}, and I trust myself to take the next small step."
+    ],
+  ],
+  health:[
+    [
+      "My body is not my enemy. It is {quality}, just like the rest of me — it's trying to keep me safe.",
+      "Noticing a sensation is not the same as being in danger. I am allowed to feel things.",
+      "I have been here before — this exact fear — and I was okay. I trust the pattern.",
+      "I am {love}. My body has carried me through every hard day so far.",
+      "Right now I am breathing. That is proof enough that I am okay."
+    ],
+    [
+      "Anxiety mimics symptoms. That is what it does. I am {quality} enough to recognise the trick.",
+      "I do not have to diagnose myself at midnight. I can wait. I can rest.",
+      "My body deserves kindness, not surveillance. I choose to treat it gently today.",
+      "I am more than a collection of symptoms. I am {love}.",
+      "The worst case is almost never the real case. I have decades of evidence that I am okay."
+    ],
+    [
+      "I am not fragile. I am {quality}, and I have survived every health scare that felt like the end.",
+      "A thought about illness is not illness itself. My mind is loud, but my body is resilient.",
+      "I am {love}. That matters more than any search result or 3am spiral.",
+      "{career_context} — I show up every day. My body is working.",
+      "I give myself permission to stop checking, stop searching, and just breathe."
+    ],
+  ],
+  social:[
+    [
+      "I belong in every room I walk into. I am {quality}, and that is enough to be here.",
+      "Most people are far too busy worrying about themselves to be judging me.",
+      "I don't need to perform. Showing up as I am — {quality}, {love} — is already enough.",
+      "The discomfort I feel is my courage working. It means I'm doing something brave.",
+      "I am allowed to be quiet. I am allowed to leave early. I am allowed to take up space."
+    ],
+    [
+      "Nobody remembers my awkward moment as vividly as I do. I can let it go.",
+      "I am {love}, and the right people will see that without me having to prove it.",
+      "Small talk is small. It doesn't define me. My {quality} nature shows in deeper moments.",
+      "I have survived every social situation that terrified me. My track record is perfect.",
+      "I am not a burden. I am a person. I am {quality}. I belong."
+    ],
+    [
+      "Being nervous doesn't mean I'm not ready. It means I care. And caring is {quality}.",
+      "My {career_context} puts me around people — and I've handled it every single time.",
+      "I don't owe anyone a perfect version of myself. The real version is {love}.",
+      "People are drawn to realness, not performance. I have realness in abundance.",
+      "I am anchored. Even in a crowded room, I know who I am."
+    ],
+  ],
+  work:[
+    [
+      "I am not behind. I am exactly where I am, and that is a valid place to be.",
+      "My productivity does not determine my worth. I am {quality} whether or not I clear my inbox.",
+      "{career_context_work} — and I got here because I am good enough. That hasn't changed.",
+      "I am {love}. No deadline can take that from me.",
+      "One task. Just one. I start there. The momentum always comes."
+    ],
+    [
+      "I am allowed to not be the hardest worker in the room. I am {quality} — that's worth more.",
+      "Done is better than perfect, and perfect doesn't exist. I release myself from that standard.",
+      "My job is what I do. It is not who I am. I am {love}.",
+      "The email can wait. My nervous system cannot. I choose myself right now.",
+      "I was chosen for this role. I belong here. I am {quality} and I have proof."
+    ],
+    [
+      "Burnout is not a badge. I give myself permission to put something down.",
+      "No one is watching my output as closely as I am. I can ease up.",
+      "{career_context_work} — the pressure is real, but I am bigger than it.",
+      "I have met every deadline that truly mattered. I trust myself to do it again.",
+      "I am {love}. Tomorrow has space for what today couldn't hold."
+    ],
+  ],
+  existential:[
+    [
+      "I don't need all the answers. Nobody has them. I am {quality}, and that's enough to keep going.",
+      "Meaning isn't found. It's made — slowly, daily, quietly. By people like me.",
+      "I am {love}. A single warm evening with someone I care about is enough meaning for a lifetime.",
+      "I am here. In {location_or_world}. Alive. That is remarkable.",
+      "I am allowed to just exist without justifying it. My presence is the contribution."
+    ],
+    [
+      "The question itself is proof I care about living well. That is {quality}.",
+      "I matter to {family_or_people}. I don't need a cosmic purpose to have a human one.",
+      "I am {love}. Small things. Daily things. That is where meaning lives.",
+      "Not knowing is not the same as being lost. I can hold the uncertainty.",
+      "Every person who ever lived shared this exact confusion. I am not alone in it."
+    ],
+    [
+      "My existence changes the lives around me in ways I cannot see. I am {quality}.",
+      "The big picture doesn't need to be clear for today to be good. Today is enough.",
+      "I don't need a purpose to deserve peace. I am {love}, and that is its own purpose.",
+      "{career_context} — I am building something, even if I can't see the shape yet.",
+      "I breathe in. I breathe out. I am alive. I let that be the whole answer."
+    ],
+  ],
+  sleep:[
+    [
+      "Tomorrow will come whether I worry about it or not. I choose rest.",
+      "My thoughts are just weather. They will pass. I am {quality} — steady underneath the noise.",
+      "I am safe in this bed. Nothing needs to be solved tonight.",
+      "I am {love}. That is still true in the dark. It will still be true in the morning.",
+      "I let my jaw unclench. I let my shoulders fall. I have done enough today."
+    ],
+    [
+      "Sleep is not something I earn. It's something I allow. I allow it now.",
+      "Every thought feels louder at midnight. That's timing, not truth. I am {quality} enough to know the difference.",
+      "My pillow doesn't need my productivity. {career_context} can wait until sunrise.",
+      "I am held — by this bed, by {lovedOne_or_the_dark}, by the quiet.",
+      "The best thing I can do right now is nothing at all. I am {love}, even at rest."
+    ],
+    [
+      "The night is not my enemy. It is asking me to stop. I listen.",
+      "I trust my body to do what it knows how to do. I have slept a thousand times before.",
+      "I am {quality}. I am {love}. These things don't disappear when I close my eyes.",
+      "{family_or_people} will still be there in the morning. The world can wait.",
+      "I breathe in for four. I hold. I breathe out. I am safe. I am tired. That is enough."
+    ],
+  ],
+};
+
+// ═══ MANTRA ENGINE ═══
+// Fills template placeholders with real user data, all in "I" voice
+function generateMantras(triggerId, setIndex){
+  const templates=MANTRA_TEMPLATES[triggerId];
+  if(!templates)return ["I am safe.","I am enough.","I am here.","I breathe.","I am okay."];
+  const idx=setIndex % templates.length;
+  const set=templates[idx];
+  return set.map(t=>fillMantraTemplate(t));
+}
+
+function fillMantraTemplate(template){
+  // Pick a random quality from descriptors
+  const qualities=user.descriptors.length>0 ? user.descriptors : ["strong","resilient","capable"];
+  const quality=qualities[Math.floor(Math.random()*qualities.length)].toLowerCase();
+
+  // Parse selfLove into usable phrases
+  const lovePhrases=parseLovePhrases(user.selfLove);
+  const love=lovePhrases[Math.floor(Math.random()*lovePhrases.length)];
+
+  // Career context variations
+  const careerContext=buildCareerContext();
+  const careerWork=buildCareerWorkContext();
+  const careerFinancial=buildCareerFinancialContext();
+
+  // Family/people
+  const familyOrPeople=user.family ? user.family.split(/[,.]/).map(s=>s.trim()).filter(s=>s)[0] || 'the people who love me' : 'the people who love me';
+
+  // Loved one variations
+  const lovedOrThey=user.lovedOne || 'the people who know me';
+  const lovedOrThem=user.lovedOne || 'the people closest to me';
+  const lovedOrFamily=user.lovedOne || familyOrPeople;
+  const lovedOrDark=user.lovedOne || 'the quiet';
+  const locationOrWorld=user.location || 'this world';
+
+  return template
+    .replace(/\{name\}/g, user.name)
+    .replace(/\{quality\}/g, quality)
+    .replace(/\{love\}/g, love)
+    .replace(/\{lovedOne_or_they\}/g, lovedOrThey)
+    .replace(/\{lovedOne_or_them\}/g, lovedOrThem)
+    .replace(/\{lovedOne_or_family\}/g, lovedOrFamily)
+    .replace(/\{lovedOne_or_the_dark\}/g, lovedOrDark)
+    .replace(/\{career_context\}/g, careerContext)
+    .replace(/\{career_context_work\}/g, careerWork)
+    .replace(/\{career_context_financial\}/g, careerFinancial)
+    .replace(/\{family_or_people\}/g, familyOrPeople)
+    .replace(/\{location_or_world\}/g, locationOrWorld)
+    .replace(/\{friends\}/g, user.friends || 'my people');
+}
+
+function parseLovePhrases(selfLove){
+  if(!selfLove || selfLove.trim().length===0) return ["enough","worthy of peace","doing my best"];
+  // Split on common delimiters and clean up
+  const raw=selfLove.split(/[,.\n;]+/).map(s=>s.trim().toLowerCase()).filter(s=>s.length>2 && s.length<80);
+  if(raw.length===0) return ["enough","worthy of peace","doing my best"];
+  // Convert to first-person fragments
+  return raw.map(phrase=>{
+    // If already starts with "I" or "my", keep it; otherwise just use as-is
+    if(phrase.startsWith('i ') || phrase.startsWith('my ')) return phrase;
+    // Remove leading "i'm" / "i am" if present for cleaner insertion
+    phrase=phrase.replace(/^i'm\s+/,'').replace(/^i am\s+/,'');
+    return phrase;
+  });
+}
+
+function buildCareerContext(){
+  if(!user.career || user.career.trim().length===0) return "I show up every day to my life";
+  const c=user.career.trim();
+  // Detect patterns
+  if(/student|study|uni|college|school/i.test(c)) return `I am working toward something as a ${c}`;
+  if(/unemploy|between|looking|job hunt|searching/i.test(c)) return `I am in transition right now, and transitions take courage`;
+  if(/freelanc|self.?employ|own business|founder|entrepreneur/i.test(c)) return `I built something from nothing as ${c}`;
+  if(/doctor|nurse|medic|nhs|healthcare|therapist|carer/i.test(c)) return `I spend my days caring for others as ${c}`;
+  if(/teacher|professor|lecturer|educator/i.test(c)) return `I shape lives every day as ${c}`;
+  if(/lawyer|solicitor|barrister|finance|banking|consult|analyst/i.test(c)) return `I operate in a high-pressure world as ${c}`;
+  if(/engineer|develop|design|tech|software/i.test(c)) return `I solve complex problems every day as ${c}`;
+  if(/artist|writer|music|creative|actor|perform/i.test(c)) return `I create for a living as ${c} — that takes real bravery`;
+  if(/parent|mum|mom|dad|stay.?at.?home|carer/i.test(c)) return `I carry an entire world on my shoulders as ${c}`;
+  return `I show up to ${c} every day, and that takes strength`;
+}
+
+function buildCareerWorkContext(){
+  if(!user.career || user.career.trim().length===0) return "I do meaningful work";
+  const c=user.career.trim();
+  if(/lawyer|solicitor|barrister|finance|banking|consult|analyst|director|exec|manager|lead|partner|vp|head of/i.test(c))
+    return `The demands of being ${c} are real and relentless`;
+  if(/doctor|nurse|medic|surgeon|nhs|healthcare/i.test(c))
+    return `Being ${c} means carrying other people's lives — that weight is real`;
+  if(/founder|ceo|entrepreneur|own business/i.test(c))
+    return `Running ${c} means the pressure never fully switches off`;
+  if(/student|study/i.test(c))
+    return `The pressure of ${c} is real, even when people dismiss it`;
+  if(/freelanc|self.?employ/i.test(c))
+    return `Working for myself as ${c} means the buck always stops with me`;
+  return `The weight of ${c} is real`;
+}
+
+function buildCareerFinancialContext(){
+  if(!user.career || user.career.trim().length===0) return "Whatever my financial situation, I am working through it";
+  const c=user.career.trim();
+  if(/unemploy|between|looking|job hunt|searching/i.test(c))
+    return `I am between roles right now, and that takes a different kind of strength`;
+  if(/student|study/i.test(c))
+    return `Being ${c} means money is tight — but this phase has an end`;
+  if(/freelanc|self.?employ/i.test(c))
+    return `The income uncertainty of ${c} is exhausting, but I've navigated it before`;
+  if(/lawyer|finance|banking|consult|tech|engineer|doctor/i.test(c))
+    return `Even in a well-paid role like ${c}, financial stress shows up in its own way`;
+  return `My work as ${c} is part of the picture, but not the whole story`;
+}
+
+const DESCRIPTORS=["Empathetic","Overthinks","Creative","Introverted","Loyal","Sensitive","Funny","Anxious","Caring","Perfectionist","Resilient","Curious","Stubborn","Gentle","Independent"];
+
+const MOODS=[
+  {emoji:"😊",label:"Good"},{emoji:"😐",label:"Okay"},
+  {emoji:"😟",label:"Low"},{emoji:"😰",label:"Anxious"},{emoji:"😢",label:"Sad"},
+];
+
+// ═══ INTAKE QUESTIONS ═══
+const INTAKE_STEPS=[
+  {id:"name",label:"Let's start gently",heading:"What should we call you?",type:"text",placeholder:"Your first name",field:"name"},
+  {id:"about",label:"Tell us about you",heading:"Paint a picture of yourself.",type:"about",desc:"The more detail you share, the more personal your mantras become. Everything here shapes what Anchor says back to you."},
+  {id:"feel",label:"So we understand",heading:"Describe what it feels like when you're anxious.",type:"textarea",placeholder:"Where do you feel it in your body? What thoughts come? What does it look like for you? The more specific you are, the better we can help.",field:"anxietyDescription"},
+  {id:"triggers",label:"So we can help when it hits",heading:"What tends to trigger your anxiety?",type:"triggers",desc:"Select all that apply. You can change these later."},
+  {id:"helpful",label:"What works for you",heading:"What is most helpful when you're feeling anxious?",type:"textarea",placeholder:"A hug, being alone, going for a walk, hearing a specific phrase... Be as detailed as you can — this shapes your experience.",field:"whatHelps"},
+  {id:"cope",label:"Your toolkit",heading:"How do you currently cope with anxiety?",type:"textarea",placeholder:"Healthy or not — no judgement. We want to understand, not fix. Detail helps us meet you where you are.",field:"copingMethods"},
+  {id:"love",label:"This is important",heading:"What do you love about yourself?",type:"textarea",placeholder:"Your qualities, your strengths, what you're proud of, what others love about you. These words become your mantras — so don't hold back.",field:"selfLove"},
+  {id:"person",label:"For your mantras",heading:"Who makes you feel safest?",type:"person",desc:"We'll write mantras in your own voice, anchored in what you've told us about yourself."},
+  {id:"welcome",label:"",heading:"",type:"welcome"},
+];
+
+// ═══ STATE ═══
+let user={name:"",location:"",career:"",family:"",friends:"",descriptors:[],anxietyDescription:"",triggers:[],whatHelps:"",copingMethods:"",selfLove:"",lovedOne:"",safeWord:"",lovedPhoto:null};
+let intakeStep=0;
+let selectedTriggers=[];
+let selectedDescriptors=[];
+let cbtStep=0;
+let cbtTrigger=null;
+let mantraTrigger=null;
+let mantraSetIdx=0;
+let breathingActive=false;
+let breathInterval=null;
+
+// ═══ SCREEN MANAGEMENT ═══
+const ALL_SCREENS=['splash','intake','home','anxious-pick','anxious-flow','mantra-pick','mantra-display','talk'];
+function showScreen(name){
+  ALL_SCREENS.forEach(s=>{
+    const el=document.getElementById('screen-'+s);
+    if(el){el.classList.remove('active');el.style.display='';}
+  });
+  const target=document.getElementById('screen-'+name);
+  if(target)target.classList.add('active');
+  if(name==='home')setupHome();
+  if(name==='anxious-pick')setupAnxiousPick();
+  if(name==='mantra-pick')setupMantraPick();
+  if(name==='intake'){intakeStep=0;selectedTriggers=[];selectedDescriptors=[];renderIntakeStep();}
+  window.scrollTo(0,0);
+}
+
+// ═══ INTAKE ═══
+function renderIntakeStep(){
+  // Progress dots
+  const progEl=document.getElementById('intake-progress');
+  progEl.innerHTML='';
+  for(let i=0;i<INTAKE_STEPS.length;i++){
+    const d=document.createElement('div');
+    d.className='progress-dot'+(i<=intakeStep?' active':'');
+    progEl.appendChild(d);
+  }
+
+  const container=document.getElementById('intake-container');
+  const step=INTAKE_STEPS[intakeStep];
+  container.innerHTML='';
+
+  const wrap=document.createElement('div');
+  wrap.className='fade-up';
+
+  if(step.type==='welcome'){
+    wrap.style.textAlign='center';
+    wrap.style.paddingTop='32px';
+    wrap.innerHTML=`
+      <div style="font-size:44px;margin-bottom:14px;">⚓</div>
+      <h2 class="heading" style="text-align:center;">You're all set, ${esc(user.name)}.</h2>
+      <p style="color:var(--cream-soft);font-size:15px;line-height:1.7;max-width:340px;margin:12px auto;">
+        Anchor knows you now. Your mantras are built from your words — your qualities, your strengths, your life. Nothing generic. Just you, talking to yourself with kindness.
+      </p>
+      <p style="color:var(--cream-dim);font-size:13px;line-height:1.6;max-width:300px;margin:8px auto 0;">
+        No judgement. No performance. Just your own voice, anchoring you back.
+      </p>
+    `;
+    document.getElementById('intake-btn').textContent='Enter Anchor';
+    document.getElementById('intake-btn').disabled=false;
+    container.appendChild(wrap);
+    return;
+  }
+
+  let html=`<p class="label">${step.label}</p><h2 class="heading">${step.heading}</h2>`;
+  if(step.desc)html+=`<p class="sub">${step.desc}</p>`;
+
+  if(step.type==='text'){
+    html+=`<input class="input-field" id="intake-input" placeholder="${step.placeholder}" oninput="updateIntakeBtn()" value="${esc(user[step.field]||'')}">`;
+  }
+  else if(step.type==='textarea'){
+    html+=`<textarea class="textarea-field" id="intake-input" placeholder="${step.placeholder}" oninput="updateIntakeBtn()">${esc(user[step.field]||'')}</textarea>`;
+  }
+  else if(step.type==='about'){
+    html+=`
+      <div style="margin-bottom:16px;">
+        <label style="color:var(--cream-dim);font-size:12px;display:block;margin-bottom:6px;">Location</label>
+        <input class="input-field" id="about-location" placeholder="City, country" value="${esc(user.location)}" oninput="updateIntakeBtn()">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="color:var(--cream-dim);font-size:12px;display:block;margin-bottom:6px;">What do you do?</label>
+        <input class="input-field" id="about-career" placeholder="Your job, studies, or how you spend your days" value="${esc(user.career)}" oninput="updateIntakeBtn()">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="color:var(--cream-dim);font-size:12px;display:block;margin-bottom:6px;">Family</label>
+        <input class="input-field" id="about-family" placeholder="Who's in your world? (parents, siblings, partner, kids...)" value="${esc(user.family)}" oninput="updateIntakeBtn()">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="color:var(--cream-dim);font-size:12px;display:block;margin-bottom:6px;">Friends</label>
+        <input class="input-field" id="about-friends" placeholder="Close friends, a tight circle, or working on it" value="${esc(user.friends)}" oninput="updateIntakeBtn()">
+      </div>
+      <label style="color:var(--cream-dim);font-size:12px;display:block;margin-bottom:8px;">Words that describe you</label>
+      <div class="tag-row" id="descriptor-tags"></div>
+    `;
+  }
+  else if(step.type==='triggers'){
+    html+=`<div class="trigger-grid" id="intake-trigger-grid"></div>`;
+  }
+  else if(step.type==='person'){
+    html+=`
+      <div class="photo-upload" id="photo-upload-btn" onclick="document.getElementById('photo-file-input').click()">
+        <span class="placeholder" id="photo-placeholder">+ Add<br>photo</span>
+      </div>
+      <p style="color:var(--cream-dim);font-size:12px;text-align:center;margin-bottom:20px;">Upload a photo of your person (optional)</p>
+      <input class="input-field" id="input-loved" placeholder="Their first name (optional)" value="${esc(user.lovedOne)}" style="margin-bottom:16px;" oninput="updateIntakeBtn()">
+      <label style="color:var(--cream-dim);font-size:12px;display:block;margin-bottom:6px;">A word or phrase that calms you down</label>
+      <input class="input-field" id="input-safe" placeholder='e.g. "You are safe" or "I\'m here"' value="${esc(user.safeWord)}" oninput="updateIntakeBtn()">
+    `;
+  }
+
+  wrap.innerHTML=html;
+  container.appendChild(wrap);
+
+  // Post-render setup
+  if(step.type==='about'){
+    const tagRow=document.getElementById('descriptor-tags');
+    DESCRIPTORS.forEach(d=>{
+      const chip=document.createElement('button');
+      chip.className='tag-chip'+(selectedDescriptors.includes(d)?' selected':'');
+      chip.textContent=d;
+      chip.onclick=()=>{
+        const idx=selectedDescriptors.indexOf(d);
+        if(idx>=0){selectedDescriptors.splice(idx,1);chip.classList.remove('selected');}
+        else{selectedDescriptors.push(d);chip.classList.add('selected');}
+        updateIntakeBtn();
+      };
+      tagRow.appendChild(chip);
+    });
+  }
+  if(step.type==='triggers'){
+    const grid=document.getElementById('intake-trigger-grid');
+    TRIGGERS.forEach(t=>{
+      const btn=document.createElement('button');
+      btn.className='trigger-btn'+(selectedTriggers.includes(t.id)?' selected':'');
+      btn.innerHTML=`<div class="icon">${t.icon}</div><div class="name">${t.label}</div><div class="desc">${t.desc}</div>`;
+      btn.onclick=()=>{
+        const idx=selectedTriggers.indexOf(t.id);
+        if(idx>=0){selectedTriggers.splice(idx,1);btn.classList.remove('selected');}
+        else{selectedTriggers.push(t.id);btn.classList.add('selected');}
+        updateIntakeBtn();
+      };
+      grid.appendChild(btn);
+    });
+  }
+  if(step.type==='person'&&user.lovedPhoto){
+    const ph=document.getElementById('photo-placeholder');
+    const pu=document.getElementById('photo-upload-btn');
+    ph.style.display='none';
+    const img=document.createElement('img');
+    img.src=user.lovedPhoto;
+    pu.appendChild(img);
+  }
+
+  document.getElementById('intake-btn').textContent='Continue';
+  updateIntakeBtn();
+}
+
+function updateIntakeBtn(){
+  const step=INTAKE_STEPS[intakeStep];
+  const btn=document.getElementById('intake-btn');
+  let ok=false;
+  if(step.type==='text'){const v=document.getElementById('intake-input');ok=v&&v.value.trim().length>0;}
+  else if(step.type==='textarea'){const v=document.getElementById('intake-input');ok=v&&v.value.trim().length>0;}
+  else if(step.type==='about'){ok=true;}
+  else if(step.type==='triggers'){ok=selectedTriggers.length>0;}
+  else if(step.type==='person'){ok=true;}
+  else if(step.type==='welcome'){ok=true;}
+  btn.disabled=!ok;
+}
+
+function advanceIntake(){
+  const step=INTAKE_STEPS[intakeStep];
+  // Save data
+  if(step.type==='text'||step.type==='textarea'){
+    user[step.field]=document.getElementById('intake-input').value.trim();
+  }
+  else if(step.type==='about'){
+    user.location=document.getElementById('about-location').value.trim();
+    user.career=document.getElementById('about-career').value.trim();
+    user.family=document.getElementById('about-family').value.trim();
+    user.friends=document.getElementById('about-friends').value.trim();
+    user.descriptors=[...selectedDescriptors];
+  }
+  else if(step.type==='triggers'){
+    user.triggers=[...selectedTriggers];
+  }
+  else if(step.type==='person'){
+    user.lovedOne=document.getElementById('input-loved').value.trim();
+    user.safeWord=document.getElementById('input-safe').value.trim();
+  }
+  else if(step.type==='welcome'){
+    showScreen('home');
+    return;
+  }
+
+  intakeStep++;
+  renderIntakeStep();
+  window.scrollTo(0,0);
+}
+
+function handlePhotoUpload(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    user.lovedPhoto=ev.target.result;
+    const pu=document.getElementById('photo-upload-btn');
+    const ph=document.getElementById('photo-placeholder');
+    if(ph)ph.style.display='none';
+    // Remove old img if any
+    const old=pu.querySelector('img');
+    if(old)old.remove();
+    const img=document.createElement('img');
+    img.src=user.lovedPhoto;
+    pu.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══ HOME ═══
+function setupHome(){
+  const now=new Date();const h=now.getHours();
+  const greeting=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('home-date').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('home-greeting').textContent=`${greeting}, ${user.name}.`;
+  document.getElementById('checkin-ask').classList.remove('hidden');
+  document.getElementById('checkin-done').classList.add('hidden');
+
+  // Talk card label
+  if(user.lovedOne){
+    document.getElementById('home-talk-title').textContent=`Talk to ${user.lovedOne}`;
+    document.getElementById('home-talk-sub').textContent='Hear their voice when you need it';
+  }
+
+  // Talk icon avatar
+  const talkIcon=document.getElementById('home-talk-icon');
+  if(user.lovedPhoto){
+    talkIcon.innerHTML=`<img src="${user.lovedPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:11px;">`;
+  }
+
+  const row=document.getElementById('mood-row');row.innerHTML='';
+  MOODS.forEach(m=>{
+    const btn=document.createElement('button');btn.className='mood-btn';
+    btn.innerHTML=`<span class="emoji">${m.emoji}</span><span class="mood-label">${m.label}</span>`;
+    btn.onclick=()=>checkIn(m);
+    row.appendChild(btn);
+  });
+}
+
+function checkIn(mood){
+  document.getElementById('checkin-ask').classList.add('hidden');
+  const done=document.getElementById('checkin-done');done.classList.remove('hidden');
+  const msg=mood.label==='Good'?"Glad to hear it.":mood.label==='Anxious'?"I'm here. Take your time.":"Noted. Thank you for checking in.";
+  done.innerHTML=`<span style="font-size:32px;">${mood.emoji}</span><p style="color:var(--cream-soft);font-size:14px;margin-top:10px;">${msg}</p><div style="width:36px;height:2px;background:var(--anchor-dim);margin:14px auto 0;border-radius:1px;"></div>`;
+}
+
+// ═══ ANXIOUS FLOW (Breathe → Mantra → Talk) ═══
+let afBreathInterval=null;
+let afMantraSetIdx=0;
+
+function setupAnxiousPick(){
+  const list=document.getElementById('anxious-trigger-list');list.innerHTML='';
+  TRIGGERS.filter(t=>user.triggers.includes(t.id)).forEach(t=>{
+    const btn=document.createElement('button');btn.className='trigger-list-btn';
+    btn.innerHTML=`<span class="icon">${t.icon}</span><div><div class="name">${t.label}</div><div class="desc">${t.desc}</div></div>`;
+    btn.onclick=()=>startAnxiousFlow(t);
+    list.appendChild(btn);
+  });
+}
+
+function startAnxiousFlow(trigger){
+  cbtTrigger=trigger;
+  afMantraSetIdx=Math.floor(Math.random()*3);
+  // Reset UI
+  document.getElementById('af-breathing').classList.remove('hidden');
+  document.getElementById('af-mantra').classList.add('hidden');
+  document.getElementById('af-trigger-label').textContent=`${trigger.icon} ${trigger.label}`;
+  showScreen('anxious-flow');
+  // Start guided breathing — 3 full cycles automatically
+  startGuidedBreathing();
+}
+
+function startGuidedBreathing(){
+  const circle=document.getElementById('af-breath-circle');
+  const text=document.getElementById('af-breath-text');
+  const count=document.getElementById('af-breath-count');
+
+  let breathNum=1;
+  let phase='in';
+  text.textContent='Breathe in';
+  count.textContent='Breath 1 of 3';
+  circle.style.transform='scale(1.35)';
+
+  clearInterval(afBreathInterval);
+  afBreathInterval=setInterval(()=>{
+    if(phase==='in'){
+      phase='hold';
+      text.textContent='Hold';
+      circle.style.transform='scale(1.35)';
+    } else if(phase==='hold'){
+      phase='out';
+      text.textContent='Breathe out';
+      circle.style.transform='scale(0.75)';
+    } else {
+      // Completed one full cycle
+      breathNum++;
+      if(breathNum>3){
+        // Done — transition to mantra
+        clearInterval(afBreathInterval);
+        text.textContent='';
+        count.textContent='';
+        setTimeout(()=>transitionToMantra(),600);
+        return;
+      }
+      phase='in';
+      text.textContent='Breathe in';
+      count.textContent=`Breath ${breathNum} of 3`;
+      circle.style.transform='scale(1.35)';
+    }
+  },4000);
+}
+
+function transitionToMantra(){
+  document.getElementById('af-breathing').classList.add('hidden');
+  const mantraEl=document.getElementById('af-mantra');
+  mantraEl.classList.remove('hidden');
+  mantraEl.classList.remove('fade-up');
+  void mantraEl.offsetWidth;
+  mantraEl.classList.add('fade-up');
+  renderAnxiousMantra();
+}
+
+function renderAnxiousMantra(){
+  const lines=generateMantras(cbtTrigger.id, afMantraSetIdx);
+  const container=document.getElementById('af-mantra-lines');
+  container.innerHTML='';
+  lines.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='mantra-line fade-up';
+    d.style.animationDelay=(0.15+i*0.15)+'s';
+    d.innerHTML=`<span class="mantra-number">${i+1}</span>${l}`;
+    container.appendChild(d);
+  });
+  document.getElementById('af-mantra-from').textContent='Repeat these to yourself';
+  if(user.safeWord){
+    document.getElementById('af-mantra-safe').classList.remove('hidden');
+    document.getElementById('af-mantra-safe-text').textContent=user.safeWord;
+  } else {
+    document.getElementById('af-mantra-safe').classList.add('hidden');
+  }
+}
+
+function anxiousNextMantra(){
+  afMantraSetIdx=(afMantraSetIdx+1)%(MANTRA_TEMPLATES[cbtTrigger.id]?.length||3);
+  renderAnxiousMantra();
+}
+
+function startTalkFromAnxious(){startTalkChat();}
+
+function exitAnxiousFlow(){
+  clearInterval(afBreathInterval);
+  showScreen('home');
+}
+
+// ═══ MANTRA FLOW ═══
+function setupMantraPick(){
+  const list=document.getElementById('mantra-trigger-list');list.innerHTML='';
+  TRIGGERS.filter(t=>user.triggers.includes(t.id)).forEach(t=>{
+    const btn=document.createElement('button');btn.className='trigger-list-btn';
+    btn.innerHTML=`<span class="icon">${t.icon}</span><span class="name">${t.label}</span>`;
+    btn.onclick=()=>showMantra(t);
+    list.appendChild(btn);
+  });
+}
+
+function showMantra(trigger){
+  mantraTrigger=trigger;mantraSetIdx=0;
+  renderMantraSet();
+  showScreen('mantra-display');
+  resetBreathing();
+}
+
+function renderMantraSet(){
+  const lines=generateMantras(mantraTrigger.id, mantraSetIdx);
+  const container=document.getElementById('mantra-lines-container');
+  container.innerHTML='';
+  lines.forEach((l,i)=>{
+    const d=document.createElement('div');d.className='mantra-line';
+    d.innerHTML=`<span class="mantra-number">${i+1}</span>${l}`;
+    d.style.animationDelay=(0.3+i*0.12)+'s';
+    container.appendChild(d);
+  });
+  document.getElementById('mantra-from').textContent='Repeat these to yourself';
+  if(user.safeWord){
+    document.getElementById('mantra-safe-word').classList.remove('hidden');
+    document.getElementById('mantra-safe-text').textContent=user.safeWord;
+  }else{document.getElementById('mantra-safe-word').classList.add('hidden');}
+}
+
+function nextMantraSet(){
+  mantraSetIdx=(mantraSetIdx+1)%(MANTRA_TEMPLATES[mantraTrigger.id]?.length||3);
+  renderMantraSet();
+}
+
+function startTalkFromMantra(){startTalkChat();}
+
+// ═══ TALK CHAT (voice of loved one) ═══
+function startTalkChat(){
+  showScreen('talk');
+  const headerName=document.getElementById('talk-header-name');
+  headerName.textContent=user.lovedOne||'Your person';
+  const avatar=document.getElementById('talk-avatar');
+  if(user.lovedPhoto){avatar.innerHTML=`<img src="${user.lovedPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;}
+  else{avatar.innerHTML='<span style="font-size:14px;">💛</span>';}
+
+  const area=document.getElementById('talk-messages');area.innerHTML='';
+
+  // Opening message from the "loved one"
+  setTimeout(()=>{
+    const name=user.lovedOne||'Someone who loves you';
+    const openings=[
+      `Hey, ${user.name}. I'm here. You don't have to explain anything — just tell me what's on your mind.`,
+      `I can tell something's weighing on you, ${user.name}. Take your time. I'm not going anywhere.`,
+      `Hey. I know this feeling. You don't have to hold it alone. Talk to me.`,
+    ];
+    const msg=openings[Math.floor(Math.random()*openings.length)];
+    addLovedMessage(msg);
+  },500);
+}
+
+function addLovedMessage(text){
+  const area=document.getElementById('talk-messages');
+  const w=document.createElement('div');w.className='fade-up';w.style.marginBottom='14px';
+  const avatarHtml=user.lovedPhoto?`<img src="${user.lovedPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:'<span style="font-size:13px;">💛</span>';
+  w.innerHTML=`<div style="display:flex;align-items:flex-start;gap:10px;"><div class="loved-avatar">${avatarHtml}</div><div class="anchor-msg" style="border-radius:4px 14px 14px 14px;">${text}</div></div>`;
+  area.appendChild(w);area.scrollTop=area.scrollHeight;
+}
+
+function submitTalkMsg(){
+  const input=document.getElementById('talk-input');
+  const text=input.value.trim();if(!text)return;input.value='';
+  const area=document.getElementById('talk-messages');
+  const d=document.createElement('div');d.className='fade-up';d.style.marginBottom='18px';
+  d.innerHTML=`<div class="user-msg">${esc(text)}</div>`;
+  area.appendChild(d);area.scrollTop=area.scrollHeight;
+
+  // Simulated empathetic responses from loved one
+  setTimeout(()=>{
+    const lovedName=user.lovedOne||'';
+    const responses=[
+      `I hear you. That sounds really heavy, ${user.name}. But you're talking about it, and that matters.`,
+      `You don't have to have this figured out. I'm just glad you're telling me.`,
+      `That makes so much sense. Of course you feel that way. Anyone would.`,
+      `I know you, ${user.name}. You're stronger than this moment feels. But you don't have to be strong right now.`,
+      `Thank you for trusting me with this. I'm not going anywhere.`,
+      `Remember — ${user.safeWord||"you are safe"}. I mean that.`,
+      `You've gotten through hard things before. Not because you're superhuman, but because you're you. And that's enough.`,
+      `I love you. Even the anxious, messy, overthinking version. Especially that one.`,
+    ];
+    const msg=responses[Math.floor(Math.random()*responses.length)];
+    addLovedMessage(msg);
+  },1200);
+}
+
+// ═══ BREATHING ═══
+function resetBreathing(){
+  breathingActive=false;clearInterval(breathInterval);
+  const c=document.getElementById('breath-circle');
+  c.style.width='76px';c.style.height='76px';c.style.transform='scale(1)';
+  document.getElementById('breath-label').innerHTML='Tap to<br>breathe';
+  document.getElementById('breath-label').style.color='var(--cream-dim)';
+  document.getElementById('breath-label').style.fontSize='11px';
+  document.getElementById('breath-label').style.fontWeight='400';
+}
+
+function startBreathing(){
+  if(breathingActive)return;breathingActive=true;
+  const c=document.getElementById('breath-circle');const l=document.getElementById('breath-label');
+  c.style.width='110px';c.style.height='110px';
+  l.style.color='var(--anchor-light)';l.style.fontSize='12px';l.style.fontWeight='500';
+  let phase='in';l.textContent='Breathe in';c.style.transform='scale(1.3)';
+  breathInterval=setInterval(()=>{
+    if(phase==='in'){phase='hold';l.textContent='Hold';c.style.transform='scale(1.3)';}
+    else if(phase==='hold'){phase='out';l.textContent='Breathe out';c.style.transform='scale(0.8)';}
+    else{phase='in';l.textContent='Breathe in';c.style.transform='scale(1.3)';}
+  },4000);
+}
+
+// ═══ UTILS ═══
+function esc(str){const d=document.createElement('div');d.textContent=str;return d.innerHTML;}
+
+// Init
+showScreen('splash');
+</script>
+</body>
+</html>
